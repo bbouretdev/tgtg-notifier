@@ -1,0 +1,61 @@
+id: tgtg-notifier
+namespace: null
+tasks:
+  - id: get-buckets
+    type: io.kestra.plugin.scripts.python.Script
+    runner: PROCESS
+    beforeCommands:
+      - 'pip install tgtg discord'
+    script: |
+      from tgtg import TgtgClient
+      import json
+      import os
+      import discord
+      import asyncio
+
+      def send_message(message_content):
+        TOKEN = '{{ secret('DISCORD_ACCESS_TOKEN') }}'
+        CHANNEL_ID = 908752444551491597 
+        class MyClient(discord.Client):
+            async def on_ready(self):
+                channel = self.get_channel(CHANNEL_ID)
+                if channel:
+                    await channel.send(message_content)
+                await self.close()
+        intents = discord.Intents.default()
+        client = MyClient(intents=intents)
+        client.run(TOKEN)
+
+      file_path = '/data/tgtg/last_active_items.json'
+
+      client = TgtgClient(access_token="{{ secret('TGTG_ACCESS_TOKEN') }}", refresh_token="{{ secret('TGTG_REFRESH_TOKEN') }}", user_id="1287793", cookie="datadome=geoLDDU5HXSXiDI8oe7H8wFT2pQNWNF2DUlngOKLSAL2IlaB7rxKhUind7xR4LwqsCkKiDD4a4Q4JTRN3JhK8yrhS1f8QWLIOh5NgFnXQ5WtG7Ll8zjwIT6nN8g8uUdT; Max-Age=5184000; Domain=.apptoogoodtogo.com; Path=/; Secure; SameSite=Lax")
+
+      try:
+        # get previous executions' items from persisted file
+        with open(file_path, 'r') as f:
+          previous_items = json.load(f)
+      except FileNotFoundError:
+        previous_items = []
+
+      # get current execution items from API
+      current_items = client.get_items()
+
+      active_items = []
+      for item in current_items:
+        active_item = {}
+        # filter items with no buckets
+        if item['items_available'] > 0:
+          active_items.append(item['item']['item_id'])
+          # send alert for new items only
+          if item['item']['item_id'] not in previous_items:
+            print(item['store']['store_name'] + ' has a new bucket available !')
+            send_message(item['store']['store_name'] + ' has a new bucket available !')
+
+      # write current execution's active items into persisted file
+      with open(file_path, 'w') as f:
+          json.dump(active_items, f)
+
+triggers:
+  - id: schedule
+    type: io.kestra.core.models.triggers.types.Schedule
+    cron: "* * * * *"
