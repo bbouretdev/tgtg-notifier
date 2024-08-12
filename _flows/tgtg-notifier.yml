@@ -1,5 +1,5 @@
 id: tgtg-notifier
-namespace: null
+namespace: tgtg
 tasks:
   - id: get-buckets
     type: io.kestra.plugin.scripts.python.Script
