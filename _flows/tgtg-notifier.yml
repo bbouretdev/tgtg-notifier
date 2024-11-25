@@ -5,7 +5,7 @@ tasks:
     type: io.kestra.plugin.scripts.python.Script
     runner: PROCESS
     beforeCommands:
-      - 'pip install tgtg discord'
+      - 'pip install tgtg==0.18.0 discord'
     script: |
       from tgtg import TgtgClient
       import json
@@ -28,7 +28,9 @@ tasks:
 
       file_path = '/data/tgtg/last_active_items.json'
 
-      client = TgtgClient(access_token="{{ secret('TGTG_ACCESS_TOKEN') }}", refresh_token="{{ secret('TGTG_REFRESH_TOKEN') }}", user_id="1287793", cookie="datadome=geoLDDU5HXSXiDI8oe7H8wFT2pQNWNF2DUlngOKLSAL2IlaB7rxKhUind7xR4LwqsCkKiDD4a4Q4JTRN3JhK8yrhS1f8QWLIOh5NgFnXQ5WtG7Ll8zjwIT6nN8g8uUdT; Max-Age=5184000; Domain=.apptoogoodtogo.com; Path=/; Secure; SameSite=Lax")
+      # client = TgtgClient(access_token="{{ secret('TGTG_ACCESS_TOKEN') }}", refresh_token="{{ secret('TGTG_REFRESH_TOKEN') }}", user_id="1287793", cookie="datadome=geoLDDU5HXSXiDI8oe7H8wFT2pQNWNF2DUlngOKLSAL2IlaB7rxKhUind7xR4LwqsCkKiDD4a4Q4JTRN3JhK8yrhS1f8QWLIOh5NgFnXQ5WtG7Ll8zjwIT6nN8g8uUdT; Max-Age=5184000; Domain=.apptoogoodtogo.com; Path=/; Secure; SameSite=Lax")
+
+      client = TgtgClient(access_token="{{ secret('TGTG_ACCESS_TOKEN') }}", refresh_token="{{ secret('TGTG_REFRESH_TOKEN') }}", cookie="datadome=geoLDDU5HXSXiDI8oe7H8wFT2pQNWNF2DUlngOKLSAL2IlaB7rxKhUind7xR4LwqsCkKiDD4a4Q4JTRN3JhK8yrhS1f8QWLIOh5NgFnXQ5WtG7Ll8zjwIT6nN8g8uUdT; Max-Age=5184000; Domain=.apptoogoodtogo.com; Path=/; Secure; SameSite=Lax")
 
       try:
         # get previous executions' items from persisted file
