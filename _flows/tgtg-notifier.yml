@@ -5,7 +5,7 @@ tasks:
     type: io.kestra.plugin.scripts.python.Script
     runner: PROCESS
     beforeCommands:
-      - 'pip install tgtg==0.18.0 discord'
+      - 'pip install tgtg==0.18.2 discord'
     script: |
       from tgtg import TgtgClient
       import json
